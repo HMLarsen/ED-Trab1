@@ -1,0 +1,16 @@
+Etapa A:
+Criação da interface gráfica conforme imagem anexada.
+
+Etapa B:
+Criar uma fila com todos os termos da expressão (conforme ela foi escrita pelo usuário), contendo operandos e operadores separados.
+
+Etapa C:
+Existem dois formatos de expressões: a infixada ((15 + 5) / 3) e a pós-fixada (15 5 + 3 /).
+É preciso criar outra fila com o formato pós-fixado da expressão.
+Serão três etapdas para a criação desta fila:
+  1- Uma fila com o formato infixado da expressão (fila A);
+  2- Uma pilha que armazenará temporariamente os operadores e parênteses (pilha B);
+  3- E por fim, a fila C (resultado final) que irá conter a expressão no formato pós-fixado;
+
+Etapa D:
+Deverá resolver a expressão aritmética partindo da fila que foi criada na etapa C.
