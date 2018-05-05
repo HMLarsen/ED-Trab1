@@ -17,6 +17,10 @@ public class FilaVetor<T> implements Fila<T> {
         tamanho = 0;
         inicio = 0;
     }
+    
+    public int getLimite() {
+        return this.limite;
+    }
 
     @Override
     public void inserir(T valor) {
@@ -67,17 +71,17 @@ public class FilaVetor<T> implements Fila<T> {
     }
 
     public FilaVetor<T> criarFilaConcatenada(FilaVetor<T> f2) {
-        FilaVetor<T> novaFila = new FilaVetor<>(10);
+        FilaVetor<T> f3 = new FilaVetor<>(this.getLimite() + f2.getLimite());
         
-        for (int i = inicio; i <= tamanho; i++) {
-            novaFila.inserir(this.info[i]);
+        for (int i = 0; i < tamanho; i++) {
+            f3.inserir(info[(inicio + i) % limite]);
         }
         
-        for (int i = f2.inicio; i <= f2.tamanho; i++) {
-            novaFila.inserir(f2.info[i]);
+        for (int i = 0; i < f2.tamanho; i++) {
+            f3.inserir(f2.info[(f2.inicio + i) % f2.limite]);
         }
         
-        return novaFila;
+        return f3;
     }
 
     @Override

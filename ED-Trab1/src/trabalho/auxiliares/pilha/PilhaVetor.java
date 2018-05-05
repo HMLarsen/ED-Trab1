@@ -30,7 +30,6 @@ public class PilhaVetor<T> implements Pilha<T> {
     public T pop() {
         T backup = peek();
         info[tamanho - 1] = null;
-
         tamanho--;
         return backup;
     }
@@ -75,7 +74,7 @@ public class PilhaVetor<T> implements Pilha<T> {
 
     public void concatenar(PilhaVetor<T> p) {
         for (int i = 0; i <= p.tamanho - 1; i++) {
-            push(p.info[i]);
+            this.push(p.info[i]);
         }
     }
 }
