@@ -317,36 +317,36 @@ public class PrincipalFrame extends javax.swing.JFrame {
 
         public double calcularExprPosfixada(Fila<String> exprPosfixada) {
             int tamanho = ((FilaVetor) exprPosfixada).getTamanho();
-            FilaVetor<String> auxiliar = new FilaVetor<>(tamanho);
+            PilhaVetor<String> auxiliar = new PilhaVetor<>(tamanho);
 
             for (int i = 0; i < tamanho; i++) {
                 String dado = exprPosfixada.retirar();
 
                 if (isNumeric(dado)) {
-                    auxiliar.inserir(dado);
+                    auxiliar.push(dado);
                 } else {
-                    double n1 = Double.parseDouble(auxiliar.retirar());
-                    double n2 = Double.parseDouble(auxiliar.retirar());
+                    double n1 = Double.parseDouble(auxiliar.pop());
+                    double n2 = Double.parseDouble(auxiliar.pop());
 
                     switch (dado) {
                         case "+":
-                            auxiliar.inserir(String.valueOf(n1 + n2));
+                            auxiliar.push(String.valueOf(n1 + n2));
                             break;
                         case "-":
-                            auxiliar.inserir(String.valueOf(n1 - n2));
+                            auxiliar.push(String.valueOf(n2 - n1));
                             break;
                         case "*":
-                            auxiliar.inserir(String.valueOf(n1 * n2));
+                            auxiliar.push(String.valueOf(n1 * n2));
                             break;
                         case "/":
-                            auxiliar.inserir(String.valueOf(n1 / n2));
+                            auxiliar.push(String.valueOf(n2 / n1));
                             break;
                     }
                 }
             }
 
             //Retorna o único dado que possui na fila, o resultado
-            return Double.parseDouble(auxiliar.retirar());
+            return Double.parseDouble(auxiliar.pop());
         }
 
         private boolean isNumeric(String s) {
