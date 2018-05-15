@@ -39,103 +39,237 @@ public class PrincipalFrame extends javax.swing.JFrame {
         }
     }
 
-    public class FilaVetor<T> implements Fila<T> {
+    public class NoListaDupla<T> {
 
-        private T[] info;
-        private int limite;
-        private int tamanho;
-        private int inicio;
+        private T info;
+        private NoListaDupla proximo;
+        private NoListaDupla anterior;
 
-        public FilaVetor(int limite) {
-            info = (T[]) new Object[limite];
-            this.limite = limite;
-            tamanho = 0;
-            inicio = 0;
+        public NoListaDupla(T info) {
+            this.info = info;
         }
 
-        public int getLimite() {
-            return this.limite;
+        public T getInfo() {
+            return info;
         }
 
-        public int getTamanho() {
-            return this.tamanho;
+        public void setInfo(T info) {
+            this.info = info;
+        }
+
+        public NoListaDupla<T> getProximo() {
+            return proximo;
+        }
+
+        public void setProximo(NoListaDupla<T> proximo) {
+            this.proximo = proximo;
+        }
+
+        public NoListaDupla<T> getAnterior() {
+            return anterior;
+        }
+
+        public void setAnterior(NoListaDupla<T> anterior) {
+            this.anterior = anterior;
+        }
+    }
+
+    public class ListaVaziaException extends Exception {
+
+        public ListaVaziaException(String msg) {
+            super(msg);
+        }
+    }
+
+    public class Lista<T> {
+
+        //ATRIBUTOS
+        protected NoListaDupla<T> primeiro;
+        protected NoListaDupla<T> ultimo;
+
+        //CONSTRUTOR
+        //INICIALIZA UMA LISTA VAZIA
+        public Lista() {
+            primeiro = null;
+        }
+
+        //INSERE UM NÓ NO IN�?CIO DA LISTA
+        public void inserirNoInicio(T valor) {
+            //CRIA UM OBJETO E ATRIBUI O VALOR DO PARÂMETRO A ELE
+            NoListaDupla<T> novo = new NoListaDupla<>(valor);
+            novo.setProximo(primeiro);
+            primeiro = novo;
+        }
+
+        //INSERE UM NÓ NO FINAL DA LISTA
+        public void inserirNoFinal(T valor) {
+            NoListaDupla<T> novo = new NoListaDupla<>(valor);
+            novo.setProximo(null);
+
+            if (estaVazia()) {
+                primeiro = novo;
+            } else {
+                ultimo.setProximo(novo);
+            }
+            ultimo = novo;
+        }
+
+        //Deve remover o primeiro nó que for encontrado que contiver o dado fornecido como argumento.
+        public void retirar(T info) {
+            NoListaDupla<T> anterior = null;
+            NoListaDupla<T> p = primeiro;
+
+            while ((p != null) && (p.getInfo() != info)) {
+                anterior = p;
+                p = p.getProximo();
+            }
+
+            if (p != null) {
+                if (anterior == null) {
+                    this.primeiro = p.getProximo();
+                } else {
+                    anterior.setProximo(p.getProximo());
+                }
+
+                if (p == ultimo) {
+                    ultimo = anterior;
+                }
+            }
+        }
+
+        //Deve exibir o conteúdo armazenado nos nós da lista encadeada.
+        public String exibir() {
+            String saida = "";
+            NoListaDupla p = primeiro;
+            while (p != null) {
+                saida = saida + p.getInfo() + "\n";
+                p = p.getProximo();
+            }
+            return saida;
+        }
+
+        //Deve retornar true se a lista estiver vazia ou false se tiver algum nó.
+        public boolean estaVazia() {
+            return primeiro == null;
+        }
+
+        //Deve procurar na lista encadeada se há um nó cujo conteúdo seja igual à variável info. 
+        //Caso seja localizado, deverá retornar este nó (objeto da classe NoListaDupla). Se não for localizado, deverá retornar null.
+        public NoListaDupla buscar(T info) {
+            NoListaDupla p = primeiro;
+            while (p != null) {
+                if (info == p.getInfo()) {
+                    return p;
+                }
+                p = p.getProximo();
+            }
+            return null;
+        }
+
+        public void liberar() {
+            NoListaDupla<T> p = primeiro;
+            NoListaDupla<T> anterior;
+            while (p != null) {
+                anterior = p.getProximo();
+                p.setAnterior(null);
+                p.setProximo(null);
+
+                p = anterior;
+            }
+            this.primeiro = null;
+        }
+
+        //Deverá retornar a quantidade de nós encadeados na lista. 
+        //Implemente este método sem criar nova variável de instância na classe Lista.
+        public int obterComprimento() {
+
+            int qtdeNos = 0;
+
+            NoListaDupla p = primeiro;
+
+            while (p != null) {
+                qtdeNos++;
+                p = p.getProximo();
+            }
+            return qtdeNos;
+        }
+
+        //Deverá retornar o valor do último nó da lista encadeada, isto é, aquele que está na extremidade oposta do primeiro nós da lista.
+        //Caso a lista esteja vazia, deverá lançar exceção ListaVaziaException.
+        //Implemente este método sem criar nova variável de instância na classe Lista.
+        public T obterUltimo() throws Exception {
+            if (estaVazia()) {
+                throw new ListaVaziaException("Lista está vazia!");
+            }
+
+            NoListaDupla<T> ultimo = null;
+
+            NoListaDupla p = primeiro;
+            while (p != null) {
+                ultimo = p;
+                p = p.getProximo();
+            }
+            return (T) ultimo.getInfo();
+        }
+
+        public NoListaDupla<T> getPrimeiro() {
+            return primeiro;
+        }
+
+    }
+
+    public class FilaLista<T> implements Fila<T> {
+
+        private Lista<T> fila;
+
+        public FilaLista() {
+            fila = new Lista<>();
         }
 
         @Override
         public void inserir(T valor) {
-            if (tamanho == limite) {
-                throw new FilaCheiaException("Fila está cheia!");
-            }
-
-            int posicaoInserir = (inicio + tamanho) % limite;
-            info[posicaoInserir] = valor;
-            tamanho++;
-        }
-
-        @Override
-        public boolean estaVazia() {
-            return tamanho == 0;
-        }
-
-        @Override
-        public T peek() {
-            if (estaVazia()) {
-                throw new FilaVaziaException("Fila está vazia!");
-            }
-
-            return info[inicio];
+            fila.inserirNoFinal(valor);
         }
 
         @Override
         public T retirar() {
             if (estaVazia()) {
-                throw new FilaVaziaException("Fila está vazia!");
+                throw new RuntimeException("A Fila esta Vazia");
             }
 
-            T valor = peek();
-            info[inicio] = null;
-            inicio = (inicio + 1) % limite;
-            tamanho--;
+            T valor = fila.getPrimeiro().getInfo();
+            fila.retirar(valor);
+
+            return valor;
+        }
+
+        @Override
+        public T peek() {
+            if (estaVazia()) {
+                throw new RuntimeException("A Fila esta Vazia");
+            }
+
+            T valor = fila.getPrimeiro().getInfo();
             return valor;
         }
 
         @Override
         public void liberar() {
-            for (int i = 0; i <= tamanho; i++) {
-                info[i] = null;
-            }
-
-            inicio = 0;
-            tamanho = 0;
-        }
-
-        public FilaVetor<T> criarFilaConcatenada(FilaVetor<T> f2) {
-            FilaVetor<T> f3 = new FilaVetor<>(this.getLimite() + f2.getLimite());
-
-            for (int i = 0; i < tamanho; i++) {
-                f3.inserir(info[(inicio + i) % limite]);
-            }
-
-            for (int i = 0; i < f2.tamanho; i++) {
-                f3.inserir(f2.info[(f2.inicio + i) % f2.limite]);
-            }
-
-            return f3;
+            fila.liberar();
         }
 
         @Override
         public String toString() {
-            String str = "";
-
-            for (int i = inicio; i < tamanho; i++) {
-                if (str.isEmpty()) {
-                    str += info[i];
-                } else {
-                    str += ", " + info[i];
-                }
+            if (estaVazia()) {
+                throw new RuntimeException("Pilha esta vazia");
             }
 
-            return str;
+            return fila.exibir();
+        }
+
+        @Override
+        public boolean estaVazia() {
+            return fila.estaVazia();
         }
 
     }
@@ -167,83 +301,197 @@ public class PrincipalFrame extends javax.swing.JFrame {
         }
     }
 
-    public class PilhaVetor<T> implements Pilha<T> {
+    public class NoLista<T> {
 
-        private T[] info;
-        private int limite;
-        private int tamanho;
+        private T info;
+        private NoLista proximo;
 
-        public PilhaVetor(int limite) {
-            info = ((T[]) new Object[limite]);
-            this.limite = limite;
-            this.tamanho = 0;
+        public NoLista(T info) {
+            this.info = info;
         }
 
-        public int getTamanho() {
-            return this.tamanho;
+        public T getInfo() {
+            return info;
+        }
+
+        public void setInfo(T info) {
+            this.info = info;
+        }
+
+        public NoLista<T> getProximo() {
+            return proximo;
+        }
+
+        public void setProximo(NoLista<T> proximo) {
+            this.proximo = proximo;
+        }
+    }
+
+    public class ListaEncadeada<T> {
+
+        private NoLista<T> primeiro;
+
+        public ListaEncadeada() {
+            this.primeiro = null;
+        }
+
+        public NoLista<T> getPrimeiro() {
+            return primeiro;
+        }
+
+        public void inserir(T info) {
+            NoLista<T> segundo = primeiro;
+            primeiro = new NoLista(info);
+            primeiro.setProximo(segundo);
+        }
+
+        public boolean estaVazia() {
+            return (primeiro == null);
+        }
+
+        public NoLista<T> buscar(T info) throws IndexOutOfBoundsException {
+            NoLista<T> aux = primeiro;
+
+            while (aux != null) {
+                if (aux.getInfo().equals(info)) {
+                    return aux;
+                }
+
+                aux = aux.getProximo();
+            }
+
+            return null;
+        }
+
+        public void retirar(T info) {
+            NoLista<T> aux = primeiro;
+            NoLista<T> anterior = null;
+
+            while ((aux != null) && (!aux.getInfo().equals(info))) {
+                anterior = aux;
+                aux = aux.getProximo();
+            }
+
+            if (aux != null) {
+                if (anterior == null) {
+                    this.primeiro = aux.getProximo();
+                } else {
+                    anterior.setProximo(aux.getProximo());
+                }
+            }
+        }
+
+        public int obterComprimento() {
+            NoLista<T> aux = primeiro;
+            int count = 0;
+
+            while (aux != null) {
+                count++;
+                aux = aux.getProximo();
+            }
+
+            return count;
+        }
+
+        public NoLista<T> obterNo(int posicao) throws IndexOutOfBoundsException {
+            if (posicao < 0) {
+                throw new IndexOutOfBoundsException("A posição informada está negativa!");
+            }
+
+            NoLista<T> aux = primeiro;
+            int auxPosicao = 0;
+
+            while (aux != null) {
+                if (posicao == auxPosicao) {
+                    return aux;
+                }
+
+                auxPosicao++;
+                aux = aux.getProximo();
+            }
+
+            throw new IndexOutOfBoundsException("A posição informada é maior que o tamanho da lista!");
+        }
+
+        public ListaEncadeada<T> criarSubLista(int inicio, int fim) {
+            if (inicio < 0) {
+                throw new IndexOutOfBoundsException("A posição inicial informada é negativa!");
+            }
+
+            if (fim > obterComprimento()) {
+                throw new IndexOutOfBoundsException("A posição final informada é maior que o tamanho da lista!");
+            }
+
+            ListaEncadeada<T> novaLista = new ListaEncadeada<>();
+            NoLista<T> aux = primeiro;
+            int auxPosicao = 0;
+
+            while (aux != null) {
+                if ((inicio <= auxPosicao) && (fim >= auxPosicao)) {
+                    novaLista.inserir(aux.getInfo());
+                }
+
+                auxPosicao++;
+                aux = aux.getProximo();
+            }
+
+            return novaLista;
         }
 
         @Override
-        public void push(T info) {
-            if (limite == tamanho) {
-                throw new PilhaCheiaException("Esgotada capacidade da pilha!");
+        public String toString() {
+            NoLista<T> aux = primeiro;
+            String str = "";
+
+            while (aux != null) {
+                if (aux == primeiro) {
+                    str += aux.getInfo();
+                } else {
+                    str += ", " + aux.getInfo();
+                }
+
+                aux = aux.getProximo();
             }
 
-            this.info[tamanho] = info;
-            tamanho++;
+            return str;
+        }
+    }
+
+    public class PilhaLista<T> implements Pilha<T> {
+
+        private ListaEncadeada<T> lista = new ListaEncadeada<>();
+
+        @Override
+        public void push(T info) {
+            lista.inserir(info);
         }
 
         @Override
         public T pop() {
             T backup = peek();
-            info[tamanho - 1] = null;
-            tamanho--;
+            lista.retirar(backup);
             return backup;
         }
 
         @Override
         public T peek() {
-            if (estaVazia()) {
+            if (lista.estaVazia()) {
                 throw new PilhaVaziaException("Pilha está vazia!");
             }
 
-            return info[tamanho - 1];
+            return lista.getPrimeiro().getInfo();
         }
 
         @Override
         public boolean estaVazia() {
-            return tamanho == 0;
+            return lista.estaVazia();
         }
 
         @Override
         public void liberar() {
-            for (int i = 0; i <= tamanho; i++) {
-                info[i] = null;
-            }
-
-            tamanho = 0;
+            lista = null;
         }
 
-        @Override
-        public String toString() {
-            String str = "";
-
-            for (int i = tamanho - 1; i >= 0; i--) {
-                if (i == tamanho - 1) {
-                    str += info[i];
-                } else {
-                    str += ", " + info[i];
-                }
-            }
-
-            return str;
-        }
-
-        public void concatenar(PilhaVetor<T> p) {
-            for (int i = 0; i <= p.tamanho - 1; i++) {
-                this.push(p.info[i]);
-            }
-        }
     }
 
     public class Calculadora {
@@ -256,7 +504,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
             //mas não tem problema porque
             //as validações posteriores utilizam o tamanho e não o limite
             //por exemplo: se for o número 25 o limite vai ser 2 mas tamanho vai ser 1
-            FilaVetor<String> fila = new FilaVetor<>(expressao.length());
+            FilaLista<String> fila = new FilaLista<>();
 
             //Essa variável serve para "agrupar" os números
             String numeral = "";
@@ -305,13 +553,11 @@ public class PrincipalFrame extends javax.swing.JFrame {
         }
 
         public Fila<String> gerarExprPosfixada(Fila<String> exprInfixada) {
-            int tamanho = ((FilaVetor) exprInfixada).getTamanho();
-
-            PilhaVetor<String> pilhaB = new PilhaVetor<>(tamanho);
-            FilaVetor<String> filaC = new FilaVetor<>(tamanho);
+            PilhaLista<String> pilhaB = new PilhaLista<>();
+            FilaLista<String> filaC = new FilaLista<>();
 
             //Percorrendo fila A
-            for (int i = 0; i < tamanho; i++) {
+            while (!exprInfixada.estaVazia()) {
                 //Retirando primeiro elemento da fila
                 String valorRef = exprInfixada.retirar();
 
@@ -319,22 +565,19 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 if (valorRef.equals("*")
                         || valorRef.equals("/")
                         || valorRef.equals("+")
-                        || valorRef.equals("-")
-                        || valorRef.equals("(")) {
-                    //Verificar ordem de procedência
-                    //se o valor retirado tiver procedência menor que último da pilha
-                    //vai adicionar na fica C o último da pila
-                    //e continuar empilhando o de menor procedência
-                    switch (valorRef) {
-                        case "+":
-                        case "-":
-                            if (!pilhaB.estaVazia()) {
-                                if ((pilhaB.peek().equals("*")) || (pilhaB.peek().equals("/"))) {
-                                    filaC.inserir(pilhaB.pop());
-                                }
-                            }
+                        || valorRef.equals("-")) {
+                    while (!pilhaB.estaVazia()) {
+                        String dado = pilhaB.peek();
 
+                        //Menos os parênteses de abertura
+                        if (dado.equals("(")) {
                             break;
+                        } else if (((valorRef.equals("+")) || (valorRef.equals("-")))
+                                && ((dado.equals("*")) || (dado.equals("/")))) {
+                            break;
+                        }
+
+                        filaC.inserir(pilhaB.pop());
                     }
 
                     pilhaB.push(valorRef);
@@ -344,11 +587,15 @@ public class PrincipalFrame extends javax.swing.JFrame {
                         String dado = pilhaB.pop();
 
                         //Menos os parênteses de abertura
-                        if (!dado.equals("(")) {
+                        if (dado.equals("(")) {
+                            break;
+                        } else {
                             filaC.inserir(dado);
                         }
                     }
-                } else if (!valorRef.equals("(")) {
+                } else if (valorRef.equals("(")) {
+                    pilhaB.push(valorRef);
+                } else {
                     //Se não for nada acima apenas irá jogar na fila C
                     filaC.inserir(valorRef);
                 }
@@ -363,10 +610,9 @@ public class PrincipalFrame extends javax.swing.JFrame {
         }
 
         public double calcularExprPosfixada(Fila<String> exprPosfixada) {
-            int tamanho = ((FilaVetor) exprPosfixada).getTamanho();
-            PilhaVetor<String> auxiliar = new PilhaVetor<>(tamanho);
+            PilhaLista<String> auxiliar = new PilhaLista<>();
 
-            for (int i = 0; i < tamanho; i++) {
+            while (!exprPosfixada.estaVazia()) {
                 String dado = exprPosfixada.retirar();
                 double n1;
                 double n2;
@@ -496,7 +742,9 @@ public class PrincipalFrame extends javax.swing.JFrame {
         try {
             Calculadora c = new Calculadora();
             Fila<String> termosInfixada = c.extrairTermos(tfExpressao.getText());
+            System.out.println(termosInfixada.toString());
             Fila<String> termosPosfixada = c.gerarExprPosfixada(termosInfixada);
+            System.out.println(termosPosfixada.toString());
             double resultado = c.calcularExprPosfixada(termosPosfixada);
 
             //Formatar o resultado
