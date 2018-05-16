@@ -17,21 +17,26 @@ public class PrincipalFrame extends javax.swing.JFrame {
 
     public class Calculadora {
 
+        public String inverterNumerais(String numerais) {
+            String retorno = "";
+
+            for (int i = numerais.length() - 1; i >= 0; i--) {
+                retorno += numerais.charAt(i);
+            }
+            
+            return retorno;
+        }
+
         public Fila<String> extrairTermos(String expressao) {
             //Diminuir um pouco do conteúdo desnecessário
             expressao = expressao.trim();
-
-            //Pode ser que o limite da fila fique maior que o tamanho propriamente
-            //mas não tem problema porque
-            //as validações posteriores utilizam o tamanho e não o limite
-            //por exemplo: se for o número 25 o limite vai ser 2 mas tamanho vai ser 1
             FilaLista<String> fila = new FilaLista<>();
 
             //Essa variável serve para "agrupar" os números
             String numeral = "";
 
             //Percorrer toda a expressão
-            for (int i = 0; i < expressao.length(); i++) {
+            for (int i = expressao.length() - 1; i >= 0; i--) {
                 char caractere = expressao.charAt(i);
 
                 if ((caractere == '(')
@@ -40,16 +45,16 @@ public class PrincipalFrame extends javax.swing.JFrame {
                         || caractere == '/'
                         || caractere == '+'
                         || caractere == '-') {
-                    //Se o numeral não tiver vazio terá que ser adicionado
+                    //Se o numeral não estiver vazio terá que ser adicionado
                     if (!numeral.isEmpty()) {
-                        fila.inserir(numeral);
+                        fila.inserir(inverterNumerais(numeral));
                         numeral = "";
                     }
 
-                    //Se for o sinal negativo temos que verificar se
-                    //o próximo caractere é espaço ou número
-                    //para incluirmos como um número negativo ou
-                    //incluirmos como sendo operador
+                    //Se for o sinal negativo temos que verificar
+                    //se o próximo caractere é espaço ou número
+                    //para incluirmos como um número negativo
+                    //ou incluirmos como sendo operador
                     if ((caractere == '-') && (i + 1 < expressao.length())) {
                         if (Character.isDigit(expressao.charAt(i + 1))) {
                             numeral += "-";
@@ -65,9 +70,9 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 }
             }
 
-            //Se ainda tiver o último numeral, adiciona
+            //Se ainda tiver o último numeral adiciona
             if (!numeral.isEmpty()) {
-                fila.inserir(numeral);
+                fila.inserir(inverterNumerais(numeral));
             }
 
             return fila;
@@ -82,19 +87,21 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 //Retirando primeiro elemento da fila
                 String valorRef = exprInfixada.retirar();
 
-                //Empilhando operadores
+                //Verificando operadores
                 if (valorRef.equals("*")
                         || valorRef.equals("/")
                         || valorRef.equals("+")
                         || valorRef.equals("-")) {
+                    //Percorrer e "desempilhar" tudo que está na pilhaB
                     while (!pilhaB.estaVazia()) {
                         String dado = pilhaB.peek();
 
-                        //Menos os parênteses de abertura
+                        //Quando chegar no parênteses de abertura irá quebrar o loop
                         if (dado.equals("(")) {
                             break;
-                        } else if (((valorRef.equals("+")) || (valorRef.equals("-")))
-                                && ((dado.equals("*")) || (dado.equals("/")))) {
+                        } else if (((dado.equals("+")) || (dado.equals("-")))
+                                && ((valorRef.equals("*")) || (valorRef.equals("/")))) {
+                            //Se procedência menor, então mantém na fila e quebra o loop
                             break;
                         }
 
@@ -107,7 +114,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
                     while (!pilhaB.estaVazia()) {
                         String dado = pilhaB.pop();
 
-                        //Menos os parênteses de abertura
+                        //Quando chegar no parênteses de abertura irá quebrar o loop
                         if (dado.equals("(")) {
                             break;
                         } else {
@@ -122,11 +129,19 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 }
             }
 
-            //Se ainda tiver o que desempilhar da pilhaB, adiciona na C
+            //Se ainda tiver o que desempilhar da pilhaB então adiciona na C
             while (!pilhaB.estaVazia()) {
                 filaC.inserir(pilhaB.pop());
             }
 
+            //Gerar uma nova fila contendo a inversão
+            FilaLista<String> novaLista = new FilaLista<>();
+
+            while (!filaC.estaVazia()) {
+                novaLista.inserir(filaC.retirar());
+            }
+
+            filaC = novaLista;
             return filaC;
         }
 

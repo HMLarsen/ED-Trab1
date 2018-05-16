@@ -1,4 +1,4 @@
-package trabalho.fila.excecao;
+package trabalho.fila;
 
 /**
  *

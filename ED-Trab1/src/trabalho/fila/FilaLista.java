@@ -1,6 +1,5 @@
 package trabalho.fila;
 
-import trabalho.fila.excecao.FilaVaziaException;
 import trabalho.listaEncadeada.ListaEncadeada;
 
 /**

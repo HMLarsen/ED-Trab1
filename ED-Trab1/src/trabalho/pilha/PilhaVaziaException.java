@@ -1,4 +1,4 @@
-package trabalho.pilha.excecao;
+package trabalho.pilha;
 
 /**
  *

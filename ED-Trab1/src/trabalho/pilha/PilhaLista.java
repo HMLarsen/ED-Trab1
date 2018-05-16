@@ -1,6 +1,5 @@
 package trabalho.pilha;
 
-import trabalho.pilha.excecao.PilhaVaziaException;
 import trabalho.listaEncadeada.ListaEncadeada;
 
 /**
