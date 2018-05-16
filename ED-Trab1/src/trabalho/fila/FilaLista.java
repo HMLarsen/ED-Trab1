@@ -1,7 +1,5 @@
 package trabalho.fila;
 
-import trabalho.listaEncadeada.ListaEncadeada;
-
 /**
  *
  * @author hugo
@@ -16,7 +14,7 @@ public class FilaLista<T> implements Fila<T> {
 
     @Override
     public void inserir(T valor) {
-        lista.inserir(valor);
+        lista.inserirNoFinal(valor);
     }
 
     @Override

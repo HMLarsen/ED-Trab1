@@ -1,4 +1,6 @@
-package trabalho.listaEncadeada;
+package trabalho.fila;
+
+import trabalho.listaEncadeada.*;
 
 /**
  *
@@ -7,23 +9,30 @@ package trabalho.listaEncadeada;
 public class ListaEncadeada<T> {
 
     private NoLista<T> primeiro;
+    private NoLista<T> ultimo;
 
     public ListaEncadeada() {
         this.primeiro = null;
+        this.ultimo = null;
     }
 
     public NoLista<T> getPrimeiro() {
         return primeiro;
     }
 
-    public void inserir(T info) {
-        NoLista<T> segundo = primeiro;
-        primeiro = new NoLista(info);
-        primeiro.setProximo(segundo);
+    public void inserirNoFinal(T info) {
+        ultimo = new NoLista(info);
+
+        if (primeiro == null) {
+            primeiro = ultimo;
+        } else {
+            NoLista<T> p = obterNo(obterComprimento() - 1);
+            p.setProximo(ultimo);
+        }
     }
 
     public boolean estaVazia() {
-        return (primeiro == null);
+        return primeiro == null;
     }
 
     public NoLista<T> buscar(T info) throws IndexOutOfBoundsException {
@@ -89,29 +98,29 @@ public class ListaEncadeada<T> {
 
         throw new IndexOutOfBoundsException("A posição informada é maior que o tamanho da lista!");
     }
-    
+
     public ListaEncadeada<T> criarSubLista(int inicio, int fim) {
         if (inicio < 0) {
             throw new IndexOutOfBoundsException("A posição inicial informada é negativa!");
         }
-        
+
         if (fim > obterComprimento()) {
             throw new IndexOutOfBoundsException("A posição final informada é maior que o tamanho da lista!");
         }
-        
+
         ListaEncadeada<T> novaLista = new ListaEncadeada<>();
         NoLista<T> aux = primeiro;
         int auxPosicao = 0;
 
         while (aux != null) {
             if ((inicio <= auxPosicao) && (fim >= auxPosicao)) {
-                novaLista.inserir(aux.getInfo());
+                novaLista.inserirNoFinal(aux.getInfo());
             }
 
             auxPosicao++;
             aux = aux.getProximo();
         }
-        
+
         return novaLista;
     }
 

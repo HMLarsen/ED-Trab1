@@ -17,16 +17,6 @@ public class PrincipalFrame extends javax.swing.JFrame {
 
     public class Calculadora {
 
-        public String inverterNumerais(String numerais) {
-            String retorno = "";
-
-            for (int i = numerais.length() - 1; i >= 0; i--) {
-                retorno += numerais.charAt(i);
-            }
-            
-            return retorno;
-        }
-
         public Fila<String> extrairTermos(String expressao) {
             //Diminuir um pouco do conteúdo desnecessário
             expressao = expressao.trim();
@@ -36,7 +26,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
             String numeral = "";
 
             //Percorrer toda a expressão
-            for (int i = expressao.length() - 1; i >= 0; i--) {
+            for (int i = 0; i < expressao.length(); i++) {
                 char caractere = expressao.charAt(i);
 
                 if ((caractere == '(')
@@ -47,7 +37,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
                         || caractere == '-') {
                     //Se o numeral não estiver vazio terá que ser adicionado
                     if (!numeral.isEmpty()) {
-                        fila.inserir(inverterNumerais(numeral));
+                        fila.inserir(numeral);
                         numeral = "";
                     }
 
@@ -72,7 +62,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
 
             //Se ainda tiver o último numeral adiciona
             if (!numeral.isEmpty()) {
-                fila.inserir(inverterNumerais(numeral));
+                fila.inserir(numeral);
             }
 
             return fila;
@@ -134,14 +124,6 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 filaC.inserir(pilhaB.pop());
             }
 
-            //Gerar uma nova fila contendo a inversão
-            FilaLista<String> novaLista = new FilaLista<>();
-
-            while (!filaC.estaVazia()) {
-                novaLista.inserir(filaC.retirar());
-            }
-
-            filaC = novaLista;
             return filaC;
         }
 
@@ -278,17 +260,17 @@ public class PrincipalFrame extends javax.swing.JFrame {
         try {
             Calculadora c = new Calculadora();
             Fila<String> termosInfixada = c.extrairTermos(tfExpressao.getText());
-            System.out.println(termosInfixada.toString());
             Fila<String> termosPosfixada = c.gerarExprPosfixada(termosInfixada);
-            System.out.println(termosPosfixada.toString());
             double resultado = c.calcularExprPosfixada(termosPosfixada);
+            //System.out.println(termosInfixada.toString());
+            //System.out.println(termosPosfixada.toString());
 
             //Formatar o resultado
             DecimalFormat df = new DecimalFormat("#0");
             df.setMaximumFractionDigits(50); //máximo de casas decimais
             tfResultado.setText(df.format(resultado));
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Expressão inválida!");
+            JOptionPane.showMessageDialog(this, e + "Expressão inválida!");
         } finally {
             tfExpressao.requestFocus();
         }

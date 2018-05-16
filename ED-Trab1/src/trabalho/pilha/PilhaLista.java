@@ -41,4 +41,13 @@ public class PilhaLista<T> implements Pilha<T> {
         lista = null;
     }
 
+    @Override
+    public String toString() {
+        if (estaVazia()) {
+            throw new PilhaVaziaException("A pilha está vazia!");
+        }
+
+        return lista.toString();
+    }
+
 }
